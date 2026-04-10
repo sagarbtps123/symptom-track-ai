@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "PatientRecord": {
+      "title": "Patient Record",
+      "description": "A record of patient symptoms and medical history",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "symptoms": { "type": "string" },
+        "pastMedicines": { "type": "string" },
+        "doctorAppointments": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["userId", "timestamp", "symptoms"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "A scheduled doctor appointment",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "time": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["scheduled", "cancelled", "completed"] }
+      },
+      "required": ["userId", "patientName", "date", "time", "reason", "status"]
+    }
+  },
+  "firestore": {
+    "/records/{recordId}": {
+      "schema": "PatientRecord",
+      "description": "Collection of patient symptom records"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": "Appointment",
+      "description": "Collection of scheduled appointments"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "SymptoTrack AI",
+  "description": "A voice-enabled patient symptom database and appointment scheduler supporting English and Hindi.",
+  "requestFramePermissions": ["microphone"]
+}
