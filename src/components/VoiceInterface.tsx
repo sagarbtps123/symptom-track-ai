@@ -25,6 +25,12 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onDataExtracted 
     setIsConnecting(true);
     try {
       const apiKey = process.env.GEMINI_API_KEY || '';
+      if (!apiKey || apiKey === 'undefined') {
+        console.error("GEMINI_API_KEY is missing. Please set it in the environment.");
+        alert("Gemini API Key is missing. Please check your configuration.");
+        setIsConnecting(false);
+        return;
+      }
       const client = new GeminiLiveClient(apiKey);
       clientRef.current = client;
 
@@ -69,9 +75,11 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onDataExtracted 
         },
         onerror: (err) => {
           console.error("Gemini Live Error:", err);
+          alert("Connection Error: " + (err.message || JSON.stringify(err)));
           setIsConnecting(false);
         },
         onclose: () => {
+          console.log("Gemini Live Connection Closed");
           setIsConnected(false);
           stopMicrophone();
         }
@@ -85,7 +93,17 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onDataExtracted 
   const startMicrophone = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      if (audioContextRef.current) {
+        await audioContextRef.current.close();
+      }
+      
       audioContextRef.current = new AudioContext({ sampleRate: 16000 });
+      
+      if (audioContextRef.current.state === 'suspended') {
+        await audioContextRef.current.resume();
+      }
+
       sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
       processorRef.current = audioContextRef.current.createScriptProcessor(4096, 1, 1);
 
